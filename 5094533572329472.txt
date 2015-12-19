@@ -1,0 +1,47 @@
+Write a function that will operate on a C-string and convert all instances of "AB" to "C" without using a second string
+for temporary storage. Use the following function signature:
+
+void translate(char *str)
+
+So for example:
+
+char astring[] = "helloABworld";
+
+translate(astring);
+
+// Now astring holds "helloCworld";
+
+Your function should handle strings of arbitrary length.
+
+Questions:
+1. Is the sequence of character that we're converting going to change?
+
+c style string "helloABworld\0oeu.pdakj" means "helloABworld"
+result: "helloCworld\0\0oeu.pdakj"
+
+cstring: "\0aoensduntdqjkntdoeunth.,p"
+
+cstring: "xCBzABc\0"
+i:           ^
+j:          ^
+
+AB -> C
+
+public static void convert(char[] cstring) {
+    if (cstring[0] == '\0') {
+        return;
+    }
+    int i = 0; // read index
+    int j = 0; // write index
+    while (cstring[i + 1] != '\0') {
+        cstring[j] = cstring[i];
+        if (cstring[i] == 'A' && cstring[i + 1] == 'B') {
+            cstring[j] = 'C';
+            i++;
+        }
+        i++;
+        j++;
+    }
+    cstring[j] = cstring[i];
+    cstring[j + 1] = cstring[i + 1];
+}
