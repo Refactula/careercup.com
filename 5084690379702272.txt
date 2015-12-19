@@ -1,0 +1,84 @@
+Given an array of five integers that represents a poker hand e.g. [2,2,2,3,3] return the value of the hand,
+ valid values are only "pair","two pairs","three of a kind","full house","four of a kind" we don't have to worry about
+ straight, flush or straight flush.
+
+1. What kind of numbers are they?
+    Supposed answer: integer numbers in range [1..15]
+
+Examples:
+
+nothing: 1,2,8,9,10 -> { 1: 1, 2: 1, 8: 1, 9: 1, 10: 1 } -> { 1: 5 }
+pair: 1,2,2,3,4 -> { 1: 1, 2: 2, 3: 1, 4: 1 } -> { 1: 4; 2: 1 }
+two pairs: 1,1,3,7,7 -> { 1: 2; 3: 1; 7: 2} -> { 1: 1; 2: 2 }
+three of a kind: 8,8,8,12,14 -> { 8: 3; 12: 1; 14: 1 } -> { 1: 2; 3: 1 }
+full house: 1,1,3,3,3 -> { 1: 2; 3: 3 } -> { 2: 1; 3: 1 }
+four of a kind: 1,5,5,5,5 -> { 1: 1; 5: 4 } -> { 1: 1; 4: 1 }
+
+Time: O(n)
+Space: O(n)
+
+Thoughts:
+1. Sort the array of cards.
+
+[0,0,0,2,0,0,0,0,1,0,0,0,1,0,1,0]
+[0,0,1,0,1,0,0,0,2,0,0,0,0,1,0,0]
+
+public static final int MAX_OCCURRENCES_OF_SINGLE_CARD = 4;
+
+public enum HandValue {
+    Nothing(5, 0, 0, 0),
+    Pair(3, 1, 0, 0),
+    TwoPairs(1, 2, 0, 0),
+    ThreeOfAKind(2, 0, 1, 0),
+    FullHouse(0, 1, 1, 0),
+    FourOfAKind(0, 0, 0, 1);
+
+    private final int[] totalOccurrences;
+
+    protected HandValue(int... totalOccurrences) {
+        this.totalOccurrences = totalOccurrences;
+    }
+
+    public boolean matches(int[] occurrences) {
+        return Arrays.equal(totalOccurrences, occurrences);
+    }
+}
+
+public static void HandValue findHandValue(int[] hand) {
+    if (hand == null) {
+        throw new NullPointerException("Hand is null");
+    }
+    if (hand.length != 5) {
+        throw new IllegalArgumentException("Hand does not contain 5 cards");
+    }
+
+    Arrays.sort(hand);
+
+    int[] totalOccurrences = new int[MAX_OCCURRENCES_OF_SINGLE_CARD];
+
+    int currentCardOccurrences = 1;
+    int i = 0;
+    while (i < hand.length) {
+        while (i + 1 < hand.length && hand[i] == hand[i + 1]) {
+             i++;
+             currentCardOccurrences++;
+        }
+        totalOccurrences[currentCardOccurrences - 1]++;
+        i++;
+        currentCardOccurrences = 1;
+    }
+
+    for (HandValue handValue : HandValue.values()) {
+        if (handValues.matches(totalOccurrences)) {
+            return handValue;
+        }
+    }
+
+    throw new IllegalStateException("Unreachable code");
+}
+
+hand: 1,1,3,7,7
+i:      ^
+currentCard: 1
+currentCardOccurrences: 2
+occurrences: 0,1,0,0,0
